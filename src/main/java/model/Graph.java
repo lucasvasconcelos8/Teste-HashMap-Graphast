@@ -7,7 +7,9 @@ import model.Node;
 import com.github.davidmoten.rtree.Entry;
 import com.github.davidmoten.rtree.RTree;
 import com.github.davidmoten.rtree.geometry.Geometries;
+import com.github.davidmoten.rtree.geometry.Geometry;
 import com.github.davidmoten.rtree.geometry.Point;
+import com.graphhopper.util.StopWatch;
 
 
 
@@ -18,6 +20,7 @@ public class Graph {
 	private long id = 1;
 	private long idEdge = 1;
 	private RTree<Long, Point> tree;
+	private RTree<Long, Point> stree;
 	
 	//For round latitude and longitude
 	public static int LAT_LONG_CONVERTION_FACTOR = 100000;
@@ -27,6 +30,9 @@ public class Graph {
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
 		this.tree = RTree.create();
+
+		//Sem star Andorra : 
+		//com star em Luxembourg 351188ms
 	}
 	
 	public void addNode(Node node){
@@ -87,18 +93,10 @@ public class Graph {
 	public Long getNodeId(double latitude, double longitude){
 
 		Node nearest_node;
-		nearest_node = getNearestNode(this.tree, latitude, longitude);
 		
-		//Jeito antigo de fazer (Sem nearestNode)
-		/*System.out.println("NearestNode id : "+nearest_node.getId());
-		for(Node node : this.getNodes()){
-			if(node.getLatitude() == latitude){
-				if(node.getLongitude() == longitude){
-					System.out.println("Node id: "+node.getId());
-					return node.getId();
-				}
-			}
-		}*/
+		int test = 0;
+		
+		nearest_node = getNearestNode(this.tree, latitude, longitude);
 		
 		return nearest_node.getId();
 	}
@@ -111,10 +109,12 @@ public class Graph {
 		Point query = Geometries.point(latitude, longitude);
 		List<Entry<T, Point>> list = tree.nearest(query, maxDistance, maxCount).toList().toBlocking().single();
 		
+		System.out.println("Entrando no while");
 		while(list.isEmpty()){
 			maxDistance = maxDistance * 2;
 			list = tree.nearest(query, maxDistance, maxCount).toList().toBlocking().single();
 		}
+		System.out.println("Sai do while");
 		
 		Node nearestNode = new Node((Long) (list.get(0).value()),list.get(0).geometry().x(),list.get(0).geometry().y());
 
@@ -128,6 +128,14 @@ public class Graph {
 	
 	public void setRTree(RTree<Long,Point> tree){
 		this.tree = tree;
+	}
+	
+	public RTree<Long,Point> getRStarTree(){
+		return this.stree;
+	}
+	
+	public void setRStarTree(RTree<Long,Point> tree){
+		this.stree = tree;
 	}
 	
 	//For round latitude and longitude

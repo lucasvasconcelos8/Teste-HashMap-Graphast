@@ -283,7 +283,7 @@ public class GraphGenarator {
 	}
 	
 	//Monaco
-	public Graph generateExample4(){
+	public Graph generateMonaco(){
 		
 		StopWatch sw = new StopWatch();
 		sw.start();
@@ -443,7 +443,7 @@ public class GraphGenarator {
 	}
 	
 	//Berlin
-		public Graph generateExample5(){
+	public Graph generateBerlin(){
 			
 			Date date = new Date();
 			String initialDate = date.toString();
@@ -453,9 +453,12 @@ public class GraphGenarator {
 			
 			//Linux
 			GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/berlin-latest.osm.pbf", "/home/lucasvasconcelos/Berlin", false, false);
+
+			//Linux (Bremen)
+			//GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/bremen-latest.osm.pbf", "/home/lucasvasconcelos/Bremen", false, false);
 			
 			//Windows
-			//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/berlin-latest.osm.pbf", "/home/lucasvasconcelos/", false, false);
+			//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/berlin-latest.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/Berlin", false, false);
 			
 			
 			GraphStorage gs = gh.getGraph();
@@ -543,20 +546,37 @@ public class GraphGenarator {
 				if(direction == 0) {          // Bidirectional
 					Edge edge = new Edge(fromNode, toNode, distance, label, true);
 					graph.addEdge(edge);
-					edge = new Edge(toNode, fromNode, distance, label, true);
-					graph.addEdge(edge);
+					fromNode.addEdgeOut(edge);
+					toNode.addEdgeIn(edge);
+					fromNode.addEdgeIn(edge);
+					toNode.addEdgeOut(edge);
 					countBidirectional++;
 					
 				} else if(direction == 1) {   // One direction: base -> adj
 					Edge edge = new Edge(fromNode, toNode, distance, label, false);
 					graph.addEdge(edge);
+					fromNode.addEdgeOut(edge);
+					toNode.addEdgeIn(edge);
 					countOneWay++;
 				} else if(direction == -1) {  // One direction: adj -> base
 					Edge edge = new Edge(toNode, fromNode, distance, label, false);
 					graph.addEdge(edge);
+					fromNode.addEdgeIn(edge);
+					toNode.addEdgeOut(edge);
 					countOneWayInverse++;
 				} else {
 					System.out.println("Edge not created. Invalid direction: " + direction);
+				}
+				
+				if(fromNode != null){
+					graph.addNode(fromNode);
+					fromNodeId = (long)fromNode.getId();
+					hashExternalIdToId.put(externalFromNodeId, fromNodeId);
+				}
+				if(toNode != null){
+					graph.addNode(toNode);
+					toNodeId = (long)toNode.getId();
+					hashExternalIdToId.put(externalToNodeId, toNodeId);
 				}
 				
 			}
@@ -577,15 +597,354 @@ public class GraphGenarator {
 			System.out.println("Final date: " + new Date());
 			System.out.println("Total time: " + total);
 			
-			//Put here for now
-			for (long node = 0; node < graph.getNumberOfNodes(); node++) {
+			for(Node node : graph.getNodes()){
+				Point p = Geometries.point(node.getLatitude(), node.getLongitude());
+				graph.setRTree(graph.getRTree().add(node.getId(), p));
+				graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
+			}
+
+/*			for (long node = 0; node < graph.getNumberOfNodes(); node++) {
 				Point p = Geometries.point(graph.getNode(node).getLatitude(), graph.getNode(node).getLongitude());
 				graph.setRTree(graph.getRTree().add(node, p));
-			}
+			}*/
 			
 			return graph;
 		}
-		
+	
+	//Bremen
+	public Graph generateBremen(){
+				
+				Date date = new Date();
+				String initialDate = date.toString();
+				double initialTime = System.currentTimeMillis();
+				
+				Graph graph = new Graph();
+				
+				//Linux (Bremen)
+				GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/bremen-latest.osm.pbf", "/home/lucasvasconcelos/Bremen", false, false);
+				
+				//Windows
+				//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/bremen-latest.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/Bremen", false, false);
+				
+				
+				GraphStorage gs = gh.getGraph();
+				EdgeIterator edgeIterator = gs.getAllEdges();
+				
+				//To know which node has already check
+				Int2LongOpenHashMap hashExternalIdToId = new Int2LongOpenHashMap();
+				
+				//Statistics
+				int count = 0;
+				int countInvalidDirection = 0;
+				int countBidirectional= 0;
+				int countOneWay = 0;
+				int countOneWayInverse = 0;
+				
+				while(edgeIterator.next()) {
+					count++;
+					
+					int externalFromNodeId = edgeIterator.getBaseNode();
+					int externalToNodeId = edgeIterator.getAdjNode();
+					
+					int distance = (int)NumberUtils.round(edgeIterator.getDistance() * 1000, 0); // Convert distance from meters to millimeters
+					
+					String label = edgeIterator.getName();
+					
+					double latitudeFrom = latLongToDouble(latLongToInt(gs.getNodeAccess().getLatitude(externalFromNodeId)));
+					double longitudeFrom = latLongToDouble(latLongToInt(gs.getNodeAccess().getLongitude(externalFromNodeId)));	
+
+					double latitudeTo = latLongToDouble(latLongToInt(gs.getNodeAccess().getLatitude(externalToNodeId)));
+					double longitudeTo = latLongToDouble(latLongToInt(gs.getNodeAccess().getLongitude(externalToNodeId)));
+					
+					Node fromNode = null,toNode = null;
+					
+					long fromNodeId, toNodeId;
+					
+					if(!hashExternalIdToId.containsKey(externalFromNodeId)){
+
+						fromNode = new Node(externalFromNodeId, latitudeFrom, longitudeFrom);
+						graph.addNode(fromNode);
+						fromNodeId = (long)fromNode.getId();
+						hashExternalIdToId.put(externalFromNodeId, fromNodeId);
+					} 
+					else {
+						fromNodeId = hashExternalIdToId.get(externalFromNodeId);
+						
+						//Nodes search for the complete structure (test used to maintain the structure) 
+						for(int i=0; i< graph.getNodes().size() ; i++){
+							if(graph.getNodes().get(i).getId() == fromNodeId){
+								fromNode = graph.getNodes().get(i);
+							}
+						}
+					}
+
+					if(!hashExternalIdToId.containsKey(externalToNodeId)){
+						toNode = new Node(externalToNodeId, latitudeTo, longitudeTo);
+						graph.addNode(toNode);
+						toNodeId = (long)toNode.getId();
+						hashExternalIdToId.put(externalToNodeId, toNodeId);
+					} 
+					else {
+						toNodeId = hashExternalIdToId.get(externalToNodeId);
+						
+						//Nodes search for the complete structure (test used to maintain the structure)
+						for(int i=0; i< graph.getNodes().size() ; i++){
+							if(graph.getNodes().get(i).getId() == toNodeId){
+								toNode = graph.getNodes().get(i);
+							}
+						}
+					}
+					
+					if(fromNodeId == toNodeId) {
+						//System.out.println("Edge not created, because fromNodeId:"+ fromNodeId + "== toNodeId:" +toNodeId);
+						continue;
+					}
+					
+					
+					//Direction (To Do)
+					int direction = 9999;
+					try {
+						direction = getDirection(edgeIterator.getFlags());
+					} catch (Exception e) {
+						countInvalidDirection++;
+					}
+					
+					if(direction == 0) {          // Bidirectional
+						Edge edge = new Edge(fromNode, toNode, distance, label, true);
+						graph.addEdge(edge);
+						fromNode.addEdgeOut(edge);
+						toNode.addEdgeIn(edge);
+						fromNode.addEdgeIn(edge);
+						toNode.addEdgeOut(edge);
+						countBidirectional++;
+						
+					} else if(direction == 1) {   // One direction: base -> adj
+						Edge edge = new Edge(fromNode, toNode, distance, label, false);
+						graph.addEdge(edge);
+						fromNode.addEdgeOut(edge);
+						toNode.addEdgeIn(edge);
+						countOneWay++;
+					} else if(direction == -1) {  // One direction: adj -> base
+						Edge edge = new Edge(toNode, fromNode, distance, label, false);
+						graph.addEdge(edge);
+						fromNode.addEdgeIn(edge);
+						toNode.addEdgeOut(edge);
+						countOneWayInverse++;
+					} else {
+						//System.out.println("Edge not created. Invalid direction: " + direction);
+					}
+					
+					if(fromNode != null){
+						graph.addNode(fromNode);
+						fromNodeId = (long)fromNode.getId();
+						hashExternalIdToId.put(externalFromNodeId, fromNodeId);
+					}
+					if(toNode != null){
+						graph.addNode(toNode);
+						toNodeId = (long)toNode.getId();
+						hashExternalIdToId.put(externalToNodeId, toNodeId);
+					}
+					
+				}
+				//Results
+				
+				System.out.println("----------Dados do Grafo de Berlin gerado----------");
+				System.out.println("Number of Nodes: " + graph.getNumberOfNodes());
+				System.out.println("Number of Edges: " + graph.getNumberOfEdges());
+				System.out.println("Count: " + count);
+				System.out.println("Number of invalid direction in original edges: " + countInvalidDirection);
+				System.out.println("Number of Bidirectional edges: " + countBidirectional);
+				System.out.println("Number of OneWay edges: " + countOneWay);
+				System.out.println("Number of OneWayInverse edges: " + countOneWayInverse);
+
+				double finalTime = System.currentTimeMillis();
+				double total = finalTime - initialTime;
+				System.out.println("Initial date: " + initialDate);
+				System.out.println("Final date: " + new Date());
+				System.out.println("Total time: " + total);
+				
+				for(Node node : graph.getNodes()){
+					Point p = Geometries.point(node.getLatitude(), node.getLongitude());
+					graph.setRTree(graph.getRTree().add(node.getId(), p));
+					graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
+				}
+
+	/*			for (long node = 0; node < graph.getNumberOfNodes(); node++) {
+					Point p = Geometries.point(graph.getNode(node).getLatitude(), graph.getNode(node).getLongitude());
+					graph.setRTree(graph.getRTree().add(node, p));
+				}*/
+				
+				return graph;
+			
+	}
+
+	//Berlin or Bremen
+		public Graph generate(String name){
+				
+				Date date = new Date();
+				String initialDate = date.toString();
+				double initialTime = System.currentTimeMillis();
+				
+				Graph graph = new Graph();
+				
+				//Linux
+				GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/"+name.toLowerCase()+"-latest.osm.pbf", "/home/lucasvasconcelos/"+name, false, false);
+	
+				//Windows
+				//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/"+name.toLowerCase()+"-latest.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/"+name, false, false);
+				
+				
+				GraphStorage gs = gh.getGraph();
+				EdgeIterator edgeIterator = gs.getAllEdges();
+				
+				//To know which node has already check
+				Int2LongOpenHashMap hashExternalIdToId = new Int2LongOpenHashMap();
+				
+				//Statistics
+				int count = 0;
+				int countInvalidDirection = 0;
+				int countBidirectional= 0;
+				int countOneWay = 0;
+				int countOneWayInverse = 0;
+				
+				while(edgeIterator.next()) {
+					count++;
+					
+					int externalFromNodeId = edgeIterator.getBaseNode();
+					int externalToNodeId = edgeIterator.getAdjNode();
+					
+					int distance = (int)NumberUtils.round(edgeIterator.getDistance() * 1000, 0); // Convert distance from meters to millimeters
+					
+					String label = edgeIterator.getName();
+					
+					double latitudeFrom = latLongToDouble(latLongToInt(gs.getNodeAccess().getLatitude(externalFromNodeId)));
+					double longitudeFrom = latLongToDouble(latLongToInt(gs.getNodeAccess().getLongitude(externalFromNodeId)));	
+
+					double latitudeTo = latLongToDouble(latLongToInt(gs.getNodeAccess().getLatitude(externalToNodeId)));
+					double longitudeTo = latLongToDouble(latLongToInt(gs.getNodeAccess().getLongitude(externalToNodeId)));
+					
+					Node fromNode = null,toNode = null;
+					
+					long fromNodeId, toNodeId;
+					
+					if(!hashExternalIdToId.containsKey(externalFromNodeId)){
+
+						fromNode = new Node(externalFromNodeId, latitudeFrom, longitudeFrom);
+						graph.addNode(fromNode);
+						fromNodeId = (long)fromNode.getId();
+						hashExternalIdToId.put(externalFromNodeId, fromNodeId);
+					} 
+					else {
+						fromNodeId = hashExternalIdToId.get(externalFromNodeId);
+						
+						//Nodes search for the complete structure (test used to maintain the structure) 
+						for(int i=0; i< graph.getNodes().size() ; i++){
+							if(graph.getNodes().get(i).getId() == fromNodeId){
+								fromNode = graph.getNodes().get(i);
+							}
+						}
+					}
+
+					if(!hashExternalIdToId.containsKey(externalToNodeId)){
+						toNode = new Node(externalToNodeId, latitudeTo, longitudeTo);
+						graph.addNode(toNode);
+						toNodeId = (long)toNode.getId();
+						hashExternalIdToId.put(externalToNodeId, toNodeId);
+					} 
+					else {
+						toNodeId = hashExternalIdToId.get(externalToNodeId);
+						
+						//Nodes search for the complete structure (test used to maintain the structure)
+						for(int i=0; i< graph.getNodes().size() ; i++){
+							if(graph.getNodes().get(i).getId() == toNodeId){
+								toNode = graph.getNodes().get(i);
+							}
+						}
+					}
+					
+					if(fromNodeId == toNodeId) {
+						System.out.println("Edge not created, because fromNodeId:"+ fromNodeId + "== toNodeId:" +toNodeId);
+						continue;
+					}
+					
+					
+					//Direction (To Do)
+					int direction = 9999;
+					try {
+						direction = getDirection(edgeIterator.getFlags());
+					} catch (Exception e) {
+						countInvalidDirection++;
+					}
+					
+					if(direction == 0) {          // Bidirectional
+						Edge edge = new Edge(fromNode, toNode, distance, label, true);
+						graph.addEdge(edge);
+						fromNode.addEdgeOut(edge);
+						toNode.addEdgeIn(edge);
+						fromNode.addEdgeIn(edge);
+						toNode.addEdgeOut(edge);
+						countBidirectional++;
+						
+					} else if(direction == 1) {   // One direction: base -> adj
+						Edge edge = new Edge(fromNode, toNode, distance, label, false);
+						graph.addEdge(edge);
+						fromNode.addEdgeOut(edge);
+						toNode.addEdgeIn(edge);
+						countOneWay++;
+					} else if(direction == -1) {  // One direction: adj -> base
+						Edge edge = new Edge(toNode, fromNode, distance, label, false);
+						graph.addEdge(edge);
+						fromNode.addEdgeIn(edge);
+						toNode.addEdgeOut(edge);
+						countOneWayInverse++;
+					} else {
+						System.out.println("Edge not created. Invalid direction: " + direction);
+					}
+					
+					if(fromNode != null){
+						graph.addNode(fromNode);
+						fromNodeId = (long)fromNode.getId();
+						hashExternalIdToId.put(externalFromNodeId, fromNodeId);
+					}
+					if(toNode != null){
+						graph.addNode(toNode);
+						toNodeId = (long)toNode.getId();
+						hashExternalIdToId.put(externalToNodeId, toNodeId);
+					}
+					
+				}
+				//Results
+				
+				System.out.println("----------Dados do Grafo de "+name+" gerado----------");
+				System.out.println("Number of Nodes: " + graph.getNumberOfNodes());
+				System.out.println("Number of Edges: " + graph.getNumberOfEdges());
+				System.out.println("Count: " + count);
+				System.out.println("Number of invalid direction in original edges: " + countInvalidDirection);
+				System.out.println("Number of Bidirectional edges: " + countBidirectional);
+				System.out.println("Number of OneWay edges: " + countOneWay);
+				System.out.println("Number of OneWayInverse edges: " + countOneWayInverse);
+
+				double finalTime = System.currentTimeMillis();
+				double total = finalTime - initialTime;
+				System.out.println("Initial date: " + initialDate);
+				System.out.println("Final date: " + new Date());
+				System.out.println("Total time: " + total);
+				
+				for(Node node : graph.getNodes()){
+					Point p = Geometries.point(node.getLatitude(), node.getLongitude());
+					graph.setRTree(graph.getRTree().add(node.getId(), p));
+					graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
+				}
+
+	/*			for (long node = 0; node < graph.getNumberOfNodes(); node++) {
+					Point p = Geometries.point(graph.getNode(node).getLatitude(), graph.getNode(node).getLongitude());
+					graph.setRTree(graph.getRTree().add(node, p));
+				}*/
+				
+				return graph;
+			}
+	
+	
 	private int getDirection(long flags) {
 		
 		long direction = (flags & 3);
