@@ -1,6 +1,9 @@
 package main;
 import java.util.Date;
 
+import javax.sql.rowset.serial.SerialException;
+import javax.sql.rowset.serial.SerialJavaObject;
+
 import com.github.davidmoten.rtree.geometry.Geometries;
 import com.github.davidmoten.rtree.geometry.Point;
 import com.graphhopper.GraphHopper;
@@ -438,6 +441,7 @@ public class GraphGenarator {
 			Point p = Geometries.point(graph.getNodes().get(i).getLatitude(), graph.getNodes().get(i).getLongitude());
 			graph.setRTree(graph.getRTree().add(graph.getNodes().get(i).getId(), p));
 		}
+	
 		
 		return graph;
 	}

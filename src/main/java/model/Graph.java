@@ -29,7 +29,7 @@ public class Graph {
 	public Graph() {
 		this.nodes = new ArrayList<Node>();
 		this.edges = new ArrayList<Edge>();
-		this.tree = RTree.create();
+		this.tree = RTree.star().create();
 
 		//Sem star Andorra : 
 		//com star em Luxembourg 351188ms

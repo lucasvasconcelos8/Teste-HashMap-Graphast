@@ -17,17 +17,15 @@ import query.ShortestPath;
 
 public class Test {
 
-	private String graphName;
 	private Graph graphTest;
 	
 	
-	public Test(String graphName, Graph graphTest) {
+	public Test(Graph graphTest) {
 		super();
-		this.graphName = graphName;
 		this.graphTest = graphTest;
 	}
 	
-	private void pickTest(){
+	/*private void pickTest(){
 		if(this.graphName.equalsIgnoreCase("Berlin")){
 			testBerlin();
 		}else if(this.graphName.equalsIgnoreCase("Monaco")){
@@ -37,9 +35,77 @@ public class Test {
 		}else if(this.graphName.equalsIgnoreCase("Example1")){
 			test1();
 		}
+	}*/
+	
+	private static void testAndorra(Graph graphAndorra) {
+		ShortestPath path5 = new ShortestPath(graphAndorra);
+		
+		
+/*		Long source = graphLux.getNodes().get(100).getId();
+		Long target = graphLux.getNodes().get(120).getId();
+		
+		System.out.println("Target: "+graphLux.getNodes().get(100).getLatitude()+","+graphLux.getNodes().get(100).getLongitude());
+		System.out.println("Source: "+graphLux.getNodes().get(120).getLatitude()+","+graphLux.getNodes().get(120).getLongitude());
+*/
+		StopWatch st = new StopWatch();
+		st.start();
+		Long source = graphAndorra.getNodeId(42.509500, 1.537765);
+		st.stop();
+		StopWatch st2 = new StopWatch();
+		st2.start();
+		Long target = graphAndorra.getNodeId(42.506441, 1.529298);
+		st2.stop();
+		
+		System.out.println("######Tempo para pegar o nó do grafo a partir da geoLocalização######");
+		System.out.println("Tempo source : "+st.getTime()+"ms");
+		System.out.println("Tempo target : "+st2.getTime()+"ms");
+		
+		StopWatch sw = new StopWatch();
+
+		sw.start();
+		Path shortestPath = new Path();
+		shortestPath = path5.executeDijkstra(source,target);
+	
+		
+		System.out.println("Path feito");
+		
+		System.out.println("----------Test ANdorra----------");
+		
+		if(shortestPath == null){
+			System.out.println("Path impossible");
+			sw.stop();
+		}
+		else{		
+			Edge edge = null;
+			int totalDistance = 0;
+			
+			for(int i = 0 ; i< shortestPath.getPathMin().size()-1 ; i++){
+				edge = findEdge(shortestPath.getPathMin().get(i),shortestPath.getPathMin().get(i+1));
+				if(edge == null){
+					System.out.println("Epa main");
+				}
+				else{
+					if(edge.getLabel().isEmpty()){
+						System.out.println("{" + edge.getDistance() + "," + edge.isBidirectional() + "}");
+					}
+					else{
+						System.out.println("{" + edge.getLabel() + "," + edge.getDistance() + "," + edge.isBidirectional() + "}");
+					}
+				}	
+				totalDistance = totalDistance + edge.getDistance();
+			}
+			sw.stop();
+			System.out.println("Total de arestas: "+(shortestPath.getPathMin().size()-1));
+			shortestPath.setTotalDistance(totalDistance);
+			System.out.println("Distância total: "+shortestPath.getTotalDistance());
+		}
+		System.out.println("Execution time of ShortestPathAndorra-HashMapTest: "+sw.getTime()+"ms");
+
+		
 	}
 
 	//teste Monaco
+	@SuppressWarnings("unused")
 	private void testMonaco() {
 
 		ShortestPath path4 = new ShortestPath(this.graphTest);
