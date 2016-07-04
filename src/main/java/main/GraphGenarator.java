@@ -600,7 +600,7 @@ public class GraphGenarator {
 			for(Node node : graph.getNodes()){
 				Point p = Geometries.point(node.getLatitude(), node.getLongitude());
 				graph.setRTree(graph.getRTree().add(node.getId(), p));
-				graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
+				//graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
 			}
 
 /*			for (long node = 0; node < graph.getNumberOfNodes(); node++) {
@@ -766,7 +766,7 @@ public class GraphGenarator {
 				for(Node node : graph.getNodes()){
 					Point p = Geometries.point(node.getLatitude(), node.getLongitude());
 					graph.setRTree(graph.getRTree().add(node.getId(), p));
-					graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
+					//graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
 				}
 
 	/*			for (long node = 0; node < graph.getNumberOfNodes(); node++) {
@@ -933,7 +933,7 @@ public class GraphGenarator {
 				for(Node node : graph.getNodes()){
 					Point p = Geometries.point(node.getLatitude(), node.getLongitude());
 					graph.setRTree(graph.getRTree().add(node.getId(), p));
-					graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
+					//graph.setRStarTree(graph.getRStarTree().add(node.getId(), p));
 				}
 
 	/*			for (long node = 0; node < graph.getNumberOfNodes(); node++) {
