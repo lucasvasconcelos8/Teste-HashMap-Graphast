@@ -3,6 +3,10 @@ package voronoi;
 public class BalancedBinaryTree {
 	private Node root;
 
+	public BalancedBinaryTree() {
+		super();
+	}
+	
 	public BalancedBinaryTree(Node root) {
 		super();
 		this.root = root;
