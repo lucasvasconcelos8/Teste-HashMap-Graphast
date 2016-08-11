@@ -296,13 +296,13 @@ public class GraphGenarator {
 		Graph graph = new Graph();
 		
 		//Linux
-		GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/monaco-150112.osm.pbf", "/home/lucasvasconcelos/Monaco", false, false);
+		//GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/monaco-150112.osm.pbf", "/home/lucasvasconcelos/Monaco", false, false);
 		
 		//Windows
 		//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/berlin-latest.osm.pbf", "/home/lucasvasconcelos/", false, false);
 		
 		//Windows com arquivo Monaco Graphast 
-		//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/monaco-150112.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/Monaco", false, false);
+		GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/monaco-150112.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/Monaco", false, false);
 		
 		GraphStorage gs = gh.getGraph();
 		EdgeIterator edgeIterator = gs.getAllEdges();
@@ -456,13 +456,13 @@ public class GraphGenarator {
 			Graph graph = new Graph();
 			
 			//Linux
-			GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/berlin-latest.osm.pbf", "/home/lucasvasconcelos/Berlin", false, false);
+			//GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/berlin-latest.osm.pbf", "/home/lucasvasconcelos/Berlin", false, false);
 
 			//Linux (Bremen)
 			//GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/bremen-latest.osm.pbf", "/home/lucasvasconcelos/Bremen", false, false);
 			
 			//Windows
-			//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/berlin-latest.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/Berlin", false, false);
+			GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/berlin-latest.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/Berlin", false, false);
 			
 			
 			GraphStorage gs = gh.getGraph();
@@ -792,10 +792,10 @@ public class GraphGenarator {
 				Graph graph = new Graph();
 				
 				//Linux
-				GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/"+name.toLowerCase()+"-latest.osm.pbf", "/home/lucasvasconcelos/"+name, false, false);
+				//GraphHopper gh = OSMToGraphHopperReader.createGraph("/home/lucasvasconcelos/Downloads/"+name.toLowerCase()+"-latest.osm.pbf", "/home/lucasvasconcelos/"+name, false, false);
 	
 				//Windows
-				//GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/"+name.toLowerCase()+"-latest.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/"+name, false, false);
+				GraphHopper gh = OSMToGraphHopperReader.createGraph("/users/vasco/Downloads/"+name.toLowerCase()+"-latest.osm.pbf", "/users/vasco/Downloads/Graphast-Graph-Test/"+name, false, false);
 				
 				
 				GraphStorage gs = gh.getGraph();

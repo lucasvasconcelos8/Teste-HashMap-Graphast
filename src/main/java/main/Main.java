@@ -35,7 +35,7 @@ public class Main {
 		Graph graphTest4 = generator.generateMonaco();
 		
 		//Luxembourg
-		Graph graphLux = generator.generate("Luxembourg");
+		//Graph graphLux = generator.generate("Luxembourg");
 		
 		//Andorra
 		//Graph graphAndorra = generator.generate("Andorra");
@@ -64,29 +64,19 @@ public class Main {
 		sw3.stop();
 		System.out.println("Test GraphTest3 , Time: "+ sw3.getTime()+"ms");
 		*/
-		
-		for(int i=0; i<graphTest4.getEdges().size() ; i++){
-			if(graphTest4.getEdges().get(i).getLabel().equalsIgnoreCase("Avenue des Ligures")){
-				System.out.println("Latitude : "+graphTest4.getEdges().get(i).getFromNode().getLatitude());
-				System.out.println("Longitude : "+graphTest4.getEdges().get(i).getFromNode().getLongitude());
-			}
-			if(graphTest4.getEdges().get(i).getLabel().equalsIgnoreCase("Lacets Saint-Léon")){
-				System.out.println("LatitudeV : "+graphTest4.getEdges().get(i).getFromNode().getLatitude());
-				System.out.println("LongitudeV : "+graphTest4.getEdges().get(i).getFromNode().getLongitude());
-			}
-		}
+
 		StopWatch sw = new StopWatch();
 		sw.start();
 		test4(graphTest4);
 		sw.stop();
 		System.out.println("Time path Monaco with StopWatch: "+sw.getTime()+"ms");			
 		
-		StopWatch sw1 = new StopWatch();
+/*		StopWatch sw1 = new StopWatch();
 		sw1.start();
 		testLuxemburgo(graphLux);
 		sw.stop();
 		System.out.println("Time path Luxembourg with StopWatch: "+sw.getTime()+"ms");
-		
+*/		
 /*		StopWatch sw1 = new StopWatch();
 		sw1.start();
 		testAndorra(graphAndorra);
@@ -184,7 +174,7 @@ public class Main {
 		st.stop();
 		StopWatch st2 = new StopWatch();
 		st2.start();
-		Long target = graphLux.getNodeId(49.611113, 6.108604);
+		Long target = graphLux.getNodeId(49.610963, 6.107624);
 		st2.stop();
 		
 		System.out.println("######Tempo para pegar o nó do grafo a partir da geoLocalização######");
@@ -231,6 +221,7 @@ public class Main {
 			System.out.println("Distância total: "+shortestPath.getTotalDistance());
 		}
 		System.out.println("Execution time of ShortestPathLuxembourg-HashMapTest: "+sw.getTime()+"ms");
+		System.out.println("Foi com R*Tree");
 
 		
 	}
@@ -240,11 +231,24 @@ public class Main {
 		ShortestPath path5 = new ShortestPath(graphTest5);
 		
 		
-		Long source = graphTest5.getNodes().get(100).getId();
+/*		Long source = graphTest5.getNodes().get(100).getId();
 		Long target = graphTest5.getNodes().get(120).getId();
 		
 		System.out.println("Target: "+graphTest5.getNodes().get(100).getLatitude()+","+graphTest5.getNodes().get(100).getLongitude());
-		System.out.println("Source: "+graphTest5.getNodes().get(120).getLatitude()+","+graphTest5.getNodes().get(120).getLongitude());
+		System.out.println("Source: "+graphTest5.getNodes().get(120).getLatitude()+","+graphTest5.getNodes().get(120).getLongitude()); */
+		
+		StopWatch st = new StopWatch();
+		st.start();
+		Long source = graphTest5.getNodeId(52.532358, 13.396231);
+		st.stop();
+		StopWatch st2 = new StopWatch();
+		st2.start();
+		Long target = graphTest5.getNodeId(52.530528, 13.447217);
+		st2.stop();
+		
+		System.out.println("######Tempo para pegar o nó do grafo a partir da geoLocalização######");
+		System.out.println("Tempo source : "+st.getTime()+"ms");
+		System.out.println("Tempo target : "+st2.getTime()+"ms");
 
 		StopWatch sw = new StopWatch();
 
@@ -255,7 +259,7 @@ public class Main {
 		
 		System.out.println("Path feito");
 		
-		System.out.println("----------Test 4----------");
+		System.out.println("----------Test Berlin----------");
 		
 		if(shortestPath == null){
 			System.out.println("Path impossible");
@@ -286,6 +290,7 @@ public class Main {
 			System.out.println("Distância total: "+shortestPath.getTotalDistance());
 		}
 		System.out.println("Execution time of ShortestPathBerlin-HashMapTest: "+sw.getTime()+"ms");
+		System.out.println("Feito com R*Tree");
 		
 	}
 
