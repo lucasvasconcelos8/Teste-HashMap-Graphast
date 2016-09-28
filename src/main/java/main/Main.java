@@ -7,6 +7,7 @@ import model.Node;
 import query.Path;
 import query.ShortestPath;
 import util.MemMon;
+import voronoi.Voronoi;
 
 
 public class Main {
@@ -24,8 +25,8 @@ public class Main {
 		
 		
 		//Small examples create for tests
-		/*Graph graphTest1 = generator.generateExample1();
-		Graph graphTest2 = generator.generateExample2();
+		Graph graphTest1 = generator.generateExampleVoronoi();
+		/*Graph graphTest2 = generator.generateExample2();
 		Graph graphTest3 = generator.generateExample3();
 		*/
 		
@@ -65,18 +66,19 @@ public class Main {
 		System.out.println("Test GraphTest3 , Time: "+ sw3.getTime()+"ms");
 		*/
 
-		StopWatch sw = new StopWatch();
-		sw.start();
-		test4(graphTest4);
-		sw.stop();
-		System.out.println("Time path Monaco with StopWatch: "+sw.getTime()+"ms");			
-		
+//		StopWatch sw = new StopWatch();
+//		sw.start();
+//		test4(graphTest4);
+//		sw.stop();
+//		System.out.println("Time path Monaco with StopWatch: "+sw.getTime()+"ms");			
+//		
 /*		StopWatch sw1 = new StopWatch();
 		sw1.start();
 		testLuxemburgo(graphLux);
 		sw.stop();
 		System.out.println("Time path Luxembourg with StopWatch: "+sw.getTime()+"ms");
 */		
+		
 /*		StopWatch sw1 = new StopWatch();
 		sw1.start();
 		testAndorra(graphAndorra);
@@ -88,6 +90,17 @@ public class Main {
 		test5(graphTest5);
 		sw2.stop();
 		System.out.println("Time path Berlin: "+ sw2.getTime()+"ms");*/
+		
+		//Teste Voronoi
+		Voronoi voronoi = new Voronoi(graphTest4);
+		StopWatch testeFast = new StopWatch();
+		testeFast.start();
+		voronoi.execute();
+		testeFast.stop();
+		System.out.println("Tempo Voronoi: "+testeFast.getTime()+"ms");
+		voronoi.draw();
+		
+		
 	}
 
 	private static void testAndorra(Graph graphAndorra) {
@@ -122,7 +135,7 @@ public class Main {
 		
 		System.out.println("Path feito");
 		
-		System.out.println("----------Test ANdorra----------");
+		System.out.println("----------Test Andorra----------");
 		
 		if(shortestPath == null){
 			System.out.println("Path impossible");

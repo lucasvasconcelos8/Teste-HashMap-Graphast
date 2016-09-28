@@ -27,6 +27,137 @@ public class GraphGenarator {
 		
 	}
 	
+	public Graph generateExampleVoronoi(){
+		Graph graph = new Graph();
+
+		Edge e;
+		Node v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11;
+
+		v1 = new Node(4,5, 0, "v1");
+
+		v2 = new Node(1,7, 1, "v2");
+
+		v3 = new Node(7,8, 2, "v3");
+
+		v4 = new Node(10,6, 4, "v4");
+
+		v5 = new Node(9,4, 0, "v5");
+
+		v6 = new Node(2,9, 1, "v6");
+
+		v7 = new Node(3,2, 2, "v7");
+		
+		v8 = new Node(6,5, 2, "v8");
+		
+		v9 = new Node(11,2, 2, "v9");
+		
+		v10 = new Node(5,3, 2, "v10");
+
+		v11 = new Node(8,1, 2, "v11");
+
+/*		v1 = new Node(4,5, 0, "v1");
+
+		v2 = new Node(1,5, 1, "v2");
+
+		v3 = new Node(7,5, 2, "v3");
+
+		v4 = new Node(10,5, 4, "v4");
+
+		v5 = new Node(9,5, 0, "v5");
+
+		v6 = new Node(2,5, 1, "v6");
+
+		v7 = new Node(3,5, 2, "v7");
+		
+		v8 = new Node(6,5, 2, "v8");
+		
+		v9 = new Node(11,5, 2, "v9");
+		
+		v10 = new Node(5,5, 2, "v10");
+
+		v11 = new Node(8,5, 2, "v11");*/
+		
+		e = new Edge(v1,v2,1, "Rua A");
+		graph.addEdge(e);
+		v1.addEdgeOut(e);
+		v2.addEdgeIn(e);
+
+		e = new Edge(v3,v4,1, "Rua B");
+		graph.addEdge(e);
+		v3.addEdgeOut(e);
+		v4.addEdgeIn(e);
+
+		e = new Edge(v1,v4,1, "Rua C");
+		graph.addEdge(e);
+		v1.addEdgeOut(e);
+		v4.addEdgeIn(e);
+
+		e = new Edge(v7,v6,1, "Rua D");
+		graph.addEdge(e);
+		v7.addEdgeOut(e);
+		v6.addEdgeIn(e);
+
+		e = new Edge(v5,v6,1, "Rua E");
+		graph.addEdge(e);
+		v5.addEdgeOut(e);
+		v6.addEdgeIn(e);
+
+		e = new Edge(v1,v6,1, "Rua F");
+		graph.addEdge(e);
+		v1.addEdgeOut(e);
+		v6.addEdgeIn(e);
+
+		e = new Edge(v5,v2, 1,"Rua G");
+		graph.addEdge(e);
+		v5.addEdgeOut(e);
+		v2.addEdgeIn(e);
+
+		e = new Edge(v3,v7,1,"Rua H");
+		graph.addEdge(e);
+		v3.addEdgeOut(e);
+		v7.addEdgeIn(e);
+		
+		e = new Edge(v8,v2,1,"Rua I");
+		graph.addEdge(e);
+		v3.addEdgeOut(e);
+		v7.addEdgeIn(e);
+		
+		e = new Edge(v9,v7,1,"Rua J");
+		graph.addEdge(e);
+		v3.addEdgeOut(e);
+		v7.addEdgeIn(e);
+		
+		e = new Edge(v10,v4,1,"Rua K");
+		graph.addEdge(e);
+		v3.addEdgeOut(e);
+		v7.addEdgeIn(e);
+		
+		e = new Edge(v8,v11,1,"Rua L");
+		graph.addEdge(e);
+		v3.addEdgeOut(e);
+		v7.addEdgeIn(e);
+		
+		graph.addNode(v1);
+		graph.addNode(v2);
+		graph.addNode(v3);
+		graph.addNode(v4);
+		graph.addNode(v5);
+		graph.addNode(v6);
+		graph.addNode(v7);
+		graph.addNode(v8);
+		graph.addNode(v9);
+		graph.addNode(v10);
+		graph.addNode(v11);
+		
+		for (int node = 0; node < graph.getNodes().size(); node++) {
+			Point p = Geometries.point(graph.getNodes().get(node).getLatitude(), graph.getNodes().get(node).getLongitude());
+			graph.setRTree(graph.getRTree().add(graph.getNodes().get(node).getId(), p));
+		}
+		
+		//Put here for now
+		return graph;
+	}
+	
 	public Graph generateExample1() {
 	
 		
@@ -41,13 +172,13 @@ public class GraphGenarator {
 
 		v3 = new Node(-3.74049, -38.5563, 2, "v3");
 
-		v4 = new Node(-3.74035, -38.55526, 4, "v4");
+		v4 = new Node(-3.74035, -38.55414, 4, "v4");
 
 		v5 = new Node(-3.73958, -38.55479, 0, "v5");
 
 		v6 = new Node(-3.74001, -38.55415, 1, "v6");
 
-		v7 = new Node(-3.7412, -38.55388, 2, "v7");
+		v7 = new Node(-3.7412, -38.55526, 2, "v7");
 
 		e = new Edge(v1,v2,1, "Rua A");
 		graph.addEdge(e);
@@ -97,9 +228,9 @@ public class GraphGenarator {
 		graph.addNode(v6);
 		graph.addNode(v7);
 		
-		for (long node = 0; node < graph.getNumberOfNodes(); node++) {
-			Point p = Geometries.point(graph.getNode(node).getLatitude(), graph.getNode(node).getLongitude());
-			graph.setRTree(graph.getRTree().add(node, p));
+		for (int node = 0; node < graph.getNodes().size(); node++) {
+			Point p = Geometries.point(graph.getNodes().get(node).getLatitude(), graph.getNodes().get(node).getLongitude());
+			graph.setRTree(graph.getRTree().add(graph.getNodes().get(node).getId(), p));
 		}
 		
 		//Put here for now
@@ -182,9 +313,9 @@ public class GraphGenarator {
 		graph.addNode(v7);
 		
 		//Put here for now
-		for (long node = 0; node < graph.getNumberOfNodes(); node++) {
-			Point p = Geometries.point(graph.getNode(node).getLatitude(), graph.getNode(node).getLongitude());
-			graph.setRTree(graph.getRTree().add(node, p));
+		for (int node = 0; node < graph.getNodes().size(); node++) {
+			Point p = Geometries.point(graph.getNodes().get(node).getLatitude(), graph.getNodes().get(node).getLongitude());
+			graph.setRTree(graph.getRTree().add(graph.getNodes().get(node).getId(), p));
 		}
 		
 		return graph;
@@ -277,9 +408,9 @@ public class GraphGenarator {
 		graph.addNode(v5);
 		
 		//Put here for now
-		for (long node = 0; node < graph.getNumberOfNodes(); node++) {
-			Point p = Geometries.point(graph.getNode(node).getLatitude(), graph.getNode(node).getLongitude());
-			graph.setRTree(graph.getRTree().add(node, p));
+		for (int node = 0; node < graph.getNodes().size(); node++) {
+			Point p = Geometries.point(graph.getNodes().get(node).getLatitude(), graph.getNodes().get(node).getLongitude());
+			graph.setRTree(graph.getRTree().add(graph.getNodes().get(node).getId(), p));
 		}
 		
 		return graph;

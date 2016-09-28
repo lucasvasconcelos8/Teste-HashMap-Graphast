@@ -6,7 +6,7 @@ package geometry;
  * Class for Graphast
  * 
  */
-public class Point {
+public class Point implements Comparable <Point>{
 
 	private double latitude;
 	private double longitude;
@@ -55,6 +55,20 @@ public class Point {
 	    
 	    return false;
 		
+	}
+	
+	public int compareTo (Point other) {
+		if (this.longitude == other.longitude) {
+			if (this.latitude == other.latitude) return 0;
+			else if (this.latitude < other.latitude) return 1;
+			else return -1;
+		}
+		else if (this.longitude < other.longitude) {
+			return 1;
+		}
+		else {
+			return -1;
+		}
 	}
 
 }
